@@ -26,6 +26,7 @@ public class Utils {
         String[] lines = data.split("\n");
 
         // Skip first line with header definition
+        System.out.println(lines[0]);
         for (int i = 1; i < lines.length; i++) {
             lines[i] = removeSpecialCharacters(lines[i]);
             String[] fields = lines[i].split(",");
@@ -35,6 +36,7 @@ public class Utils {
         return output;
     }
 
+    // Note: make it public before running UtilsTest
     private static String removeSpecialCharacters(String line) {
         // Remove from per_point_diff: the % character
         line = line.replace("%", "");
