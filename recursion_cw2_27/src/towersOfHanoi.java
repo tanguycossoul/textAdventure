@@ -7,14 +7,15 @@
             - Each move consists of taking the upper disk from one of the stacks and placing it on top of another stack.
             - No disk may be placed on top of a smaller disk.
         - The minimal number of moves required is 2n − 1, where n is the number of disks.
+    Thoughts:
+        - 2 types of moves:
+            - move n-1 disks to other peg
+                - move top disk to other peg is n-1 is odd, or to dest peg if even
+            - then move the 1 bottom disk to dest
  */
 
-//public class towersOfHanoi {
-//    public static void displaySolution( int N) {
-//        if (N is too big or too small then ask again){
-//          check if there is a move you can make where you move a disk on top of another one
-//          else{
-//         randomly choose a valid move ( ontop of the smallest disk that is still larger than the one you are trying to move
-//        }
-//    }
-//}
+public class towersOfHanoi {
+    public static void displaySolution(int N) {
+
+    }
+}
