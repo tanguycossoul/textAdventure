@@ -1,13 +1,14 @@
 import java.awt.image.AreaAveragingScaleFilter;
 import java.util.ArrayList;
 
-/*
-    @Author: Tanguy Cossoul
- */
 public class Main {
+    private static DataManager DM;
 
     public static void main(String[] args) {
-        String data = Utils.readFileAsString("data\\2016_Presidential_Results.csv");
-        ArrayList<ElectionResult> results = Utils.parse2016ElectionResults( data );
+        DM = new DataManager();
+
+        Election.loadFromCSV( DM, DM.election_filename);
+//        Education.loadFromCSV( DM, DM.education_filename );
+//        Employment.loadFromCSV( DM, DM.employment_filename );
     }
 }
