@@ -22,9 +22,7 @@ public class Election {
             String[] fields = lines[i].split(",");
 
             State state = DM.safeAddState( fields[8] );
-            County county = state.safeAddCounty( fields[9] );
-
-            // TODO: use FIPS as the unique ID instead of State+County ?
+            County county = state.safeAddCounty( fields[9], Integer.parseInt( fields[10] ) );
 
             Election vote = new Election();
             vote.setDemVotes( (int) Double.parseDouble( fields[1] ) );

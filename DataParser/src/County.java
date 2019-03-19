@@ -1,12 +1,13 @@
 public class County {
-    private String name;
-    private int fips;
+    private String name; // not unique! use FIPS instead
+    private int fips; // unique ID
     private Election vote;
     private Education educ;
     private Employment employ;
 
-    public County(String name) {
+    public County(String name, int fips) {
         this.name = name;
+        this.fips = fips;
     }
 
     public String getName() {

@@ -9,10 +9,10 @@ public class DataManager {
     public static final int    election_file_start = 1;
 
     public static final String education_filename = "data\\Education.csv";
-    public static final int    education_file_start = 5;
+    public static final int    education_file_start = 6;
 
     public static final String employment_filename = "data\\Unemployment.csv";
-    public static final int    employment_file_start = 8;
+    public static final int    employment_file_start = 9;
 
     public DataManager() {
         states = new ArrayList<>();
@@ -23,6 +23,10 @@ public class DataManager {
     // - if already exists, don't add and return existing
     // - if doesn't already exists, add and return it
     public State safeAddState(String name) {
+        if (name.equals("")) { return null; }
+
+        name = name.toUpperCase();
+
         if ( state_names.contains( name ) ) {
             return searchState( name );
         }
