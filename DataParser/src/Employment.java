@@ -95,7 +95,7 @@ public class Employment {
     }
 
     private static String removeStateFromCountyName(String countyName, String State) {
-        String last2Chars = countyName.substring(countyName.length() - 2, countyName.length());
+        String last2Chars = countyName.substring(countyName.length() - 2, countyName.length()).toUpperCase();
         if (last2Chars.equals(State)) {
             return countyName.substring(0, countyName.length() - 2);
         }
