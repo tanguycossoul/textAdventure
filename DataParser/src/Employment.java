@@ -102,7 +102,7 @@ public class Employment {
                     employ.setEmployedLaborForce(0, employed );
                     employ.setUnemployedLaborForce(0, unemployed );
 
-                    if (employ.getTotalLaborForce(0) != employ.getEmployedLaborForce(0) + employ.getUnemployedLaborForce(0)) {
+                    if (employ.getTotalLaborForce(0) - employ.getEmployedLaborForce(0) - employ.getUnemployedLaborForce(0) > 2) {
                         System.out.println("WARNING: employment data doesn't add up: line=" + lines[i]);
                     }
                 }
