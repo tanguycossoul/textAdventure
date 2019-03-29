@@ -1,64 +1,63 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Graph {
 
-    private static List<Node> nodes = new ArrayList<>();
-    private static String[] nodeNames;
-    private static int[][] connectivity;
-
+    private static HashMap<String, Node> nodes = new HashMap<String, Node>();
 
     public Node getNode(String name) {
-        for (Node n : nodes) {
-            if (n.getName().equals( name )) { return n; }
-        }
-        return null;
+        return nodes.get(name);
     }
 
+    public void addNode(String name, String description) {
+        Node n = new Node(name, description);
+        nodes.put(n.getName(), n);
+    }
 
-    private void addEdge(String name1, String name2) {
+    public void addEdge(Node node1, Node node2) {
+        node1.addNeighbor( node2 );
+        System.out.println("INFO: connecting " + node1.getName() + " to " + node2.getName());
+    }
+
+    public void addEdge(String name1, String name2) {
         getNode(name1).addNeighbor( getNode(name2) );
         System.out.println("INFO: connecting " + name1 + " to " + name2);
     }
 
-
-    // Getters and setters
-    public String[] getNodeNames() {
-        return nodeNames;
+    public void addEdgeBidir(Node node1, Node node2) {
+        node1.addNeighbor( node2 );
+        node2.addNeighbor( node1 );
+        System.out.println("INFO: connecting " + node1.getName() + " to " + node2.getName());
+        System.out.println("INFO: connecting " + node2.getName() + " to " + node1.getName());
     }
 
-    public void setNodeNames(String[] node_names) {
-        Graph.nodeNames = node_names;
+    public void addEdgeBidir(String name1, String name2) {
+        getNode(name1).addNeighbor( getNode(name2) );
+        getNode(name2).addNeighbor( getNode(name1) );
+        System.out.println("INFO: connecting " + name1 + " to " + name2);
+        System.out.println("INFO: connecting " + name2 + " to " + name1);
     }
 
-    public int[][] getConnectivity() {
-        return connectivity;
-    }
 
-    public void setConnectivity(int[][] connectivity) {
-        Graph.connectivity = connectivity;
-
-        // Build up graph of connected node
-        for (String name : nodeNames) {
-            nodes.add( new Node(name) );
-        }
-
-        for (int i = 0; i < connectivity[0].length; i++) {
-            for (int j = 0; j < connectivity.length; j++) {
-                if (connectivity[i][j] == 1) {
-                    addEdge(nodeNames[i], nodeNames[j]);
-                }
-            }
-        }
-    }
-
+    //------------------------------------------------------------------------------------------------------------------
     public class Node {
         private String name;
-        private ArrayList<Node> neighbors;
+        private String description;
+        private HashMap<String, Node> neighbors;
 
-        private Node(String name) {
-            neighbors = new ArrayList<Node>();
+        private Node(String name, String description) {
             this.name = name;
+            this.description = description;
+            neighbors = new HashMap<String, Node>();
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
         }
 
         public String getName() {
@@ -66,43 +65,30 @@ public class Graph {
         }
 
         private void addNeighbor(Node n) {
-            for (Node node : neighbors) {
-                if (node.getName().equals( n.getName() ) ) { return; }
-            }
-            neighbors.add(n);
+            if (n == null) { return; }
+            neighbors.put( n.getName(), n);
         }
 
         private void addNeighbor(String name) {
-            for (Node node : neighbors) {
-                if (node.getName().equals( name ) ) { return; }
-            }
-            neighbors.add(new Node( name ));
+            Node n = nodes.get(name);
+            if (n == null) { return; }
+            neighbors.put(name, n);
         }
 
         public String[] getNeighborNames() {
             if (neighbors.size() == 0) { return null; }
 
-            String[] arr = new String[ neighbors.size() ];
-            for (int i = 0; i < neighbors.size(); i++) {
-                arr[i] = neighbors.get(i).getName();
+            String[] output = new String[ neighbors.size() ];
+            int i=0;
+            for (String name : neighbors.keySet()) {
+                output[i++] = neighbors.get(name).getName();
             }
-            return arr;
+            return output;
         }
 
         public Node getNeighbor(String name) {
-            for (int i = 0; i < neighbors.size() ; i++) {
-                if (neighbors.get(i).getName().equals(name)) {
-                    return neighbors.get(i);
-                }
-            }
-            return null;
+            return neighbors.get( name );
         }
 
-        private void addTwoDirectionNeighbor(Node n) {
-            if (n == null) { return; }
-
-            this.addNeighbor( n );
-            n.addNeighbor( this );
-        }
     }
 }
