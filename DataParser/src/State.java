@@ -16,7 +16,7 @@ public class State {
     // - if already exists, don't add and return existing
     // - if doesn't already exists, add and return it
     public County safeAddCounty(String name, int fips) {
-        if (name.equals("") || fips <= 0) { return null; }
+        if (name.equals("") || fips < 0) { return null; } // Note: fips <= if want to filter US
 
         if ( county_fips.contains( fips ) ) {
             return searchCounty( fips );
@@ -36,6 +36,15 @@ public class State {
             }
         }
         return null; // oops
+    }
+
+    public County getCounty(String name) {
+        for (County c : counties) {
+            if (c.getName().equals( name )) {
+                return c;
+            }
+        }
+        return null;
     }
 
     public boolean removeCounty(County c) {

@@ -3,7 +3,7 @@ public class County {
     private int fips; // unique ID
     private Election vote;
     private Education educ;
-    private Employment employ;
+//    private Employment employ;
 
     public County(String name, int fips) {
         this.name = name;
@@ -42,11 +42,11 @@ public class County {
         this.educ = educ;
     }
 
-    public Employment getEmploy() {
-        return employ;
-    }
-
-    public void setEmploy(Employment employ) {
-        this.employ = employ;
-    }
+//    public Employment getEmploy() {
+//        return employ;
+//    }
+//
+//    public void setEmploy(Employment employ) {
+//        this.employ = employ;
+//    }
 }

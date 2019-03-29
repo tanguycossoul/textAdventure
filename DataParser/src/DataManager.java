@@ -9,7 +9,7 @@ public class DataManager {
     public static final int    election_file_start = 1;
 
     public static final String education_filename = "data\\Education.csv";
-    public static final int    education_file_start = 6;
+    public static final int    education_file_start = 5; // with US: 5, without US: 6
 
     public static final String employment_filename = "data\\Unemployment.csv";
     public static final int    employment_file_start = 9;
@@ -45,5 +45,18 @@ public class DataManager {
             }
         }
         return null; // oops
+    }
+
+    public ArrayList<State> getStates() {
+        return states;
+    }
+
+    public State getState(String name) {
+        for (State state: states) {
+            if (state.getName().equals(name)) {
+                return state;
+            }
+        }
+        return null;
     }
 }
