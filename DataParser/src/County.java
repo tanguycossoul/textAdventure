@@ -1,8 +1,9 @@
 public class County {
     private String name; // not unique! use FIPS instead
-    private int fips; // unique ID
+    private int fips;    // unique ID
     private Education educ;
     private Employment employ;
+    private RealEstate re;
 
     public County(String name, int fips) {
         this.name = name;
@@ -39,5 +40,13 @@ public class County {
 
     public void setEmploy(Employment employ) {
         this.employ = employ;
+    }
+
+    public RealEstate getRealEstate() {
+        return re;
+    }
+
+    public void setRealEstate(RealEstate re) {
+        this.re = re;
     }
 }

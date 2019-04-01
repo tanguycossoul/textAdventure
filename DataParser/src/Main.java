@@ -25,7 +25,8 @@ public class Main {
         printEmployData("Arlington County", DM.getState("VA").getCounty("ArlingtonCounty").getEmploy().getAllData() );
 
 
-//        Employment.loadFromCSV( DM, DM.employment_filename );
+        RealEstate.loadFromCSV( DM, DM.realestate_filename );
+        printRealEstateData("Arlington County", DM.getState("VA").getCounty("ArlingtonCounty").getRealEstate().getAllData() );
     }
 
     private static void printHeader() {
@@ -65,6 +66,29 @@ public class Main {
         }
     }
 
+    private static void printRealEstateData(String area, double[][] data) {
+        // Print header
+        System.out.println();
+        System.out.print("Area,Type," );
+        for (int i = 0; i < RealEstate.periods.length; i++) {
+            System.out.print(RealEstate.periods[i]);
+            if (i < RealEstate.periods.length - 1) {
+                System.out.print(",");
+            }
+        }
+        System.out.println();
+
+        for (int i = 0; i < data.length; i++) {
+            System.out.print(area + "," + RealEstate.fields_name[i] + ",");
+            for (int j = 0; j < data[0].length; j++) {
+                System.out.print( (int) data[i][j]);
+                if (j < data[0].length - 1) {
+                    System.out.print(",");
+                }
+            }
+            System.out.println();
+        }
+    }
 
     private static double[][] calculateEducStateAvg(String state_name) {
         double[][] output = new double[Education.NUM_FIELDS][Education.NUM_PERIODS];

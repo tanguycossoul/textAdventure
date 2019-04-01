@@ -5,11 +5,14 @@ public class DataManager {
     private ArrayList<State> states;
     private ArrayList<String> state_names;
 
-    public static final String education_filename = "C:\\Users\\mcoss\\IdeaProjects\\DataParser\\DataParser\\data\\Education.csv";
+    public static final String education_filename = "data\\Education.csv";
     public static final int    education_file_start = 5; // with US: 5, without US: 6
 
-    public static final String employment_filename = "C:\\Users\\mcoss\\IdeaProjects\\DataParser\\DataParser\\data\\Unemployment.csv";
+    public static final String employment_filename = "data\\Unemployment.csv";
     public static final int    employment_file_start = 8;
+
+    public static final String realestate_filename = "data\\RealEstateSaleHistory.csv";
+    public static final int    realestate_file_start = 1;
 
     public DataManager() {
         states = new ArrayList<>();
