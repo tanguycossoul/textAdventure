@@ -16,28 +16,35 @@ public class Main {
             trap        0       0       0       0       0       0
          */
 
-        Graph g = new Graph();
+        Level l = new Level();
         for (int i = 0; i < rooms.length; i++) {
-            g.addNode(rooms[i], descr[i]);
+            l.addRoom(rooms[i], descr[i]);
         }
-        g.addEdge("hall", "bedroom");
-        g.addEdgeBidir("hall", "closet");
-        g.addEdge("bedroom", "dungeon");
-        g.addEdge("dungeon", "kitchen");
-        g.addEdge("dungeon", "trap");
-        g.addEdge("kitchen", "hall");
+        l.addEdge("hall", "bedroom");
+        l.addEdgeBidir("hall", "closet");
+        l.addEdge("bedroom", "dungeon");
+        l.addEdge("dungeon", "kitchen");
+        l.addEdge("dungeon", "trap");
+        l.addEdge("kitchen", "hall");
+
+        // Add room items
+        l.getRoom("hall").addItem("knife");
+        l.getRoom("hall").addItem("map");
 
         // Game loop
-        Graph.Node currentRoom = g.getNode("hall");
+        Player player = new Player("Tanguy", "the Tan-est of 'em all");
+        player.setCurrentRoom( l.getRoom("hall") );
+        System.out.println("You are in the " + player.getCurrentRoom().getName());
 
         String response = "";
         Scanner in = new Scanner(System.in);
         Boolean quit = false;
         do {
-            if (currentRoom.getNeighborNames() == null) {
+            if (player.getCurrentRoom().getNeighborNames() == null) {
                 System.out.println("You're stuck and die there. The end.");
                 quit = true;
-            } else {
+            }
+            else {
                 System.out.println("\nWhat do you want to do?");
                 response = in.nextLine();
                 String[] words = response.split(" ");
@@ -46,37 +53,82 @@ public class Main {
                     if (words.length < 2) {
                         displayHelp();
                     } else {
-                        Graph.Node destRoom = currentRoom.getNeighbor(words[1]);
+                        Level.Room destRoom = player.getCurrentRoom().getNeighbor(words[1]);
                         if (destRoom == null) {
                             System.out.println("You can't go to " + words[1] + ". Try again.");
                         } else {
-                            currentRoom = destRoom;
+                            player.setCurrentRoom( destRoom );
+                            System.out.println("You are now in the " + player.getCurrentRoom().getName());
                         }
-                        System.out.println("You are in the " + currentRoom.getName());
                     }
                 }
 
                 else if (words[0].equals("look")) {
-                    System.out.println("You are in the " + currentRoom.getName() + ". You can go to: ");
-                    for (String name : currentRoom.getNeighborNames() ) {
-                        System.out.println("- " + name + " (" + g.getNode(name).getDescription() + ")");
+                    System.out.println("You are in the " + player.getCurrentRoom().getName() + ". You can go to: ");
+                    for (String name : player.getCurrentRoom().getNeighborNames() ) {
+                        System.out.println("- " + name + " (" + l.getRoom(name).getDescription() + ")");
+                    }
+                    if (player.getCurrentRoom().getItems().size() != 0) {
+                        System.out.print("The room contains: " + player.getCurrentRoom().displayItems());
+                    }
+                    if (player.getItems().size() != 0) {
+                        System.out.print("You have: ");
+                        player.displayInventory();
                     }
                 }
 
                 else if (words[0].equals("add")) {
                     if (words.length < 3) {
                         displayHelp();
-                    } else if (g.getNode(words[1]) != null) {
+                    } else if (l.getRoom(words[1]) != null) {
                         System.out.println("Hmm. A room called " + words[1] + " already exists. Try another name.");
                     } else {
                         String description = "";
                         for (int i = 2; i < words.length; i++) {
                             description += words[i] + " ";
                         }
-                        g.addNode(words[1], description);
-                        g.addEdgeBidir(currentRoom, g.getNode(words[1]));
+                        l.addRoom(words[1], description);
+                        l.addEdgeBidir(player.getCurrentRoom(), l.getRoom(words[1]));
+                        System.out.println("You can now go to: ");
+                        for (String name : player.getCurrentRoom().getNeighborNames() ) {
+                            System.out.println("- " + name + " (" + l.getRoom(name).getDescription() + ")");
+                        }
                     }
-                } else if (words[0].equals("quit")) {
+                }
+
+                else if (words[0].equals("take")) {
+                    if (words.length < 2) {
+                        displayHelp();
+                    } else {
+                        Item item = player.getCurrentRoom().removeItem( words[1] );
+                        if (item == null) {
+                            System.out.print("Hmm. Coulnd't remove " + words[1] + ". Here's what the room contains: " + player.getCurrentRoom().displayItems());
+                        } else {
+                            player.addItem( item );
+                            player.getCurrentRoom().removeItem( item.getName() );
+                            System.out.print("You now have: ");
+                            player.displayInventory();
+                        }
+                    }
+                }
+
+                else if (words[0].equals("drop")) {
+                    if (words.length < 2) {
+                        displayHelp();
+                    } else {
+                        Item item = player.removeItem( words[1] );
+                        if (item == null) {
+                            System.out.print("Hmm. Coulnd't remove " + words[1] + ". Here's what you have: ");
+                            player.displayInventory();
+                        } else {
+                            player.getCurrentRoom().addItem( item );
+                            player.removeItem( item.getName() );
+                            System.out.print("The " + player.getCurrentRoom().getName() + " know contains: " + player.getCurrentRoom().displayItems());
+                        }
+                    }
+                }
+
+                else if (words[0].equals("quit")) {
                     quit = true;
                 } else {
                     displayHelp();
