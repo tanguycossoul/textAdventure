@@ -1,9 +1,7 @@
 import java.util.Scanner;
 
 public class Main {
-
-    private static String[] rooms = {"hall", "bedroom", "closet", "dungeon", "kitchen", "trap"};
-    private static String[] descr = {"where you walk", "where you sleep", "where you put your stuff", "where you code", "where you cook", "where you lock your brother"};
+//TODO: should the map not be in level?!!!!???
 
     public static void main(String[] args) {
         /* Rooms connectivity matrix:
@@ -16,27 +14,13 @@ public class Main {
             trap        0       0       0       0       0       0
          */
 
-        Level l = new Level();
-        for (int i = 0; i < rooms.length; i++) {
-            l.addRoom(rooms[i], descr[i]);
-        }
-        l.addEdge("hall", "bedroom");
-        l.addEdgeBidir("hall", "closet");
-        l.addEdge("bedroom", "dungeon");
-        l.addEdge("dungeon", "kitchen");
-        l.addEdge("dungeon", "trap");
-        l.addEdge("kitchen", "hall");
-
-        // Add room items
-        l.getRoom("hall").addItem("knife");
-        l.getRoom("hall").addItem("map");
+        Level l = new Level("level 1");
 
         // Game loop
-        Player player = new Player("Tanguy", "the Tan-est of 'em all");
-        player.setCurrentRoom( l.getRoom("hall") );
+        Player player = new Player("Tanguy", "the Tan-est of 'em all", l.getRoom("hall"));
         System.out.println("You are in the " + player.getCurrentRoom().getName());
 
-        String response = "";
+        String response;
         Scanner in = new Scanner(System.in);
         Boolean quit = false;
         do {
@@ -44,9 +28,11 @@ public class Main {
                 System.out.println("You're stuck and die there. The end.");
                 quit = true;
             }
+
             else {
                 System.out.println("\nWhat do you want to do?");
                 response = in.nextLine();
+//                response = "look";
                 String[] words = response.split(" ");
 
                 if (words[0].equals("go")) {
@@ -67,6 +53,9 @@ public class Main {
                     System.out.println("You are in the " + player.getCurrentRoom().getName() + ". You can go to: ");
                     for (String name : player.getCurrentRoom().getNeighborNames() ) {
                         System.out.println("- " + name + " (" + l.getRoom(name).getDescription() + ")");
+                    }
+                    if (player.getCurrentRoom().getCreatures().size() != 0) {
+                        System.out.println("The following creatures are in the room: " + player.getCurrentRoom().getCreatureNames());
                     }
                     if (player.getCurrentRoom().getItems().size() != 0) {
                         System.out.print("The room contains: " + player.getCurrentRoom().displayItems());
@@ -132,6 +121,14 @@ public class Main {
                     quit = true;
                 } else {
                     displayHelp();
+                }
+
+                // Creatures
+                for (Level.Room room : l.getRooms()) {
+                    for (Creature c : room.getCreatures()) {
+//                        c.act();
+                        c.move();
+                    }
                 }
             }
         } while (!quit);

@@ -7,9 +7,11 @@ public class Player {
     private ArrayList<Item> items = new ArrayList<>();
     private Level.Room currentRoom;
 
-    public Player(String name, String description) {
+    public Player(String name, String description, Level.Room room) {
         this.name = name;
         this.description = description;
+        setCurrentRoom( room );
+        room.incNumPlayers();
     }
 
     public void addItem(Item item) {
@@ -57,15 +59,12 @@ public class Player {
         this.currentRoom = newroom;
     }
 
-    public boolean moveToRoom( String name ) { // try and move to neighboring room with given name
-        Level.Room room = Level.self.getRoom(name);
-        if (room == null) {
-            return false;
-        }
-        else {
-            setCurrentRoom(room);
-            return true;
-        }
+    public boolean moveToRoom(Level.Room next) { // try and move to neighboring room with given name
+        if (next == null) { return false; }
+        currentRoom.decNumPlayers();
+        setCurrentRoom( next );
+        currentRoom.incNumPlayers();
+        return true;
     }
 
     public String getName() {
@@ -83,5 +82,4 @@ public class Player {
     public void setDescription(String description) {
         this.description = description;
     }
-
 }

@@ -1,10 +1,42 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Level {
+/*
+    TODO: move level-1 specifics into a sub-class
+ */
 
-    public static Level self = new Level();
+public class Level {
+    private String name;
+    private static String[] room_names = {"hall", "bedroom", "closet", "dungeon", "kitchen", "trap"};
+    private static String[] room_descr = {"where you walk", "where you sleep", "where you put your stuff", "where you code", "where you cook", "where you lock your brother"};
+
+    private ArrayList<Player> players;
+
+//    public static Level self = new Level();
     private static HashMap<String, Room> rooms = new HashMap<String, Room>();
+
+    public Level(String name) {
+        this.name = name;
+        for (int i = 0; i < room_names.length; i++) {
+            addRoom(room_names[i], room_descr[i]);
+        }
+
+        addEdge("hall", "bedroom");
+        addEdgeBidir("hall", "closet");
+        addEdge("bedroom", "dungeon");
+        addEdge("dungeon", "kitchen");
+        addEdge("dungeon", "trap");
+        addEdge("kitchen", "hall");
+
+        // Add room items
+        getRoom("hall").addItem("knife");
+        getRoom("hall").addItem("map");
+
+        // Add creatures
+        getRoom("hall").addCreature("chicken");
+        getRoom("bedroom").addCreature("wumpus");
+    }
+
 
     public Room getRoom(String name) {
         return rooms.get(name);
@@ -39,19 +71,22 @@ public class Level {
 //        System.out.println("INFO: connecting " + name2 + " to " + name1);
     }
 
+    public ArrayList<Room> getRooms() {
+        return new ArrayList<Room>( rooms.values() );
+    }
 
     //------------------------------------------------------------------------------------------------------------------
     public class Room {
         private String name;
         private String description;
-        private ArrayList<Item> items;
-        private HashMap<String, Room> neighbors;
+        private ArrayList<Item> items = new ArrayList<>();
+        private ArrayList<Creature> creatures = new ArrayList<>();
+        private HashMap<String, Room> neighbors =  new HashMap<>();
+        private int numPlayers = 0;
 
         private Room(String name, String description) {
             this.name = name;
             this.description = description;
-            neighbors = new HashMap<String, Room>();
-            items = new ArrayList<>();
         }
 
         public String getDescription() {
@@ -90,6 +125,10 @@ public class Level {
 
         public Room getNeighbor(String name) {
             return neighbors.get( name );
+        }
+
+        public ArrayList<Room> getNeighbors() {
+            return new ArrayList<>( neighbors.values() );
         }
 
         public ArrayList<Item> getItems() {
@@ -140,5 +179,70 @@ public class Level {
             return items.remove(item);
         }
 
+        public Player GetRandPlayer() {
+            return players.get(players.size()* (int)Math.random());
+        }
+
+        public int getNumPlayers() {
+            return numPlayers;
+        }
+
+        public int incNumPlayers() {
+            return ++numPlayers;
+        }
+
+        public int decNumPlayers() {
+            return --numPlayers;
+        }
+
+        public boolean hasPlayer() {
+            return ( numPlayers > 0 );
+        }
+
+        // Creatures
+        public String getCreatureNames() {
+            String output = "";
+            for (Creature c : creatures) {
+                output += c.getName() + " ";
+            }
+            return output;
+        }
+
+        public ArrayList<Creature> getCreatures() {
+            return creatures;
+        }
+
+        public Creature removeCreature(String name) {
+            for (Creature c : creatures) {
+                if (c.getName().equals( name )) {
+                    creatures.remove( c );
+                    return c;
+                }
+            }
+            System.out.println("WARNING: couldn't remove creature named: " + name);
+            return null;
+        }
+
+        public Creature removeCreature(Creature c) {
+            if (c == null) { return null; }
+            creatures.remove( c );
+            return c;
+        }
+
+        public void addCreature(String name) {
+            Creature c;
+            if (name.toLowerCase().equals("chicken"))      { c = new Chicken(this); }
+            else if (name.toLowerCase().equals("wumpus"))  { c = new Wumpus(this); }
+            else if (name.toLowerCase().equals("popstar")) { c = new Popstar(this); }
+            else {
+                System.out.println("WARNING: cannot create creature named: " + name);
+                return;
+            }
+            addCreature( c );
+        }
+
+        public void addCreature(Creature creature) {
+            creatures.add( creature );
+        }
     }
 }
