@@ -2,15 +2,11 @@ public class Popstar extends Creature {
 
     public Popstar(Level.Room startRoom) {
         super(startRoom);
-        this.name = "popstar";
+        setName("popstar");
    }
 
    @Override
-    public void move() {
+    public void act() {
         moveCloser();
    }
-
-    public void act() {
-        System.out.println("TODO: Popstar act()");
-    }
 }

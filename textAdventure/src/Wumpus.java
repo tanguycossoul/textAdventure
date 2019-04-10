@@ -2,14 +2,11 @@ public class Wumpus extends Creature {
 
     public Wumpus(Level.Room startRoom) {
         super(startRoom);
-        this.name = "wumpus";
+        setName("wumpus");
    }
 
    @Override
-   public void move() {
+   public void act() {
         moveAway();
    }
-   public void act() {
-        System.out.println("TODO: Wumpus act()");
-    }
 }

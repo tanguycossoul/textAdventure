@@ -3,28 +3,24 @@ import javafx.collections.SetChangeListener;
 import java.util.ArrayList;
 
 public abstract class Creature {
-    protected String name;
-    protected Level.Room currentRoom;
+    private String name;
+    private Level.Room currentRoom;
     protected double ODDS_ATTACK = 0.5;
-
-    public Creature() {
-    }
 
     public Creature(Level.Room startRoom) {
         currentRoom = startRoom;
     }
 
-    public abstract void move();
     public abstract void act();
 
-    // TODO: test
     protected void moveRandom() {
         ArrayList<Level.Room> neighbors = currentRoom.getNeighbors();
+        if (neighbors.size() < 1) {
+            System.out.println("[I] " + this.getName() + " cannot move from " + this.getCurrentRoom().getName());
+            return;
+        }
         Level.Room next = neighbors.get( (int) ( neighbors.size() * Math.random() ) );
-
-        currentRoom.removeCreature( this );
         setCurrentRoom( next );
-        currentRoom.addCreature( this );
     }
 
     protected void moveAway() {
@@ -37,10 +33,7 @@ public abstract class Creature {
         if (rooms_avail.size() < 1) { return;}
 
         Level.Room next = rooms_avail.get( (int) ( Math.random() * rooms_avail.size() ) );
-
-        currentRoom.removeCreature( this );
         setCurrentRoom( next );
-        currentRoom.addCreature( this );
     }
 
     protected void moveCloser() {
@@ -63,7 +56,6 @@ public abstract class Creature {
     }
 
     // TODO:
-    // - add ArrayList<Player> in Level.Room
     // - add a dropRandomItem() to Player
 //    public void actAttack() {
 //        System.out.println("You've been attacked by a " + this.getName());
@@ -75,12 +67,16 @@ public abstract class Creature {
 //        }
 //    }
 
-    private Level.Room getCurrentRoom() {
+    public Level.Room getCurrentRoom() {
         return currentRoom;
     }
 
     public void setCurrentRoom(Level.Room currentRoom) {
         this.currentRoom = currentRoom;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getName() {

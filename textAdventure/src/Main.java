@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 
 public class Main {
@@ -22,7 +24,7 @@ public class Main {
 
         String response;
         Scanner in = new Scanner(System.in);
-        Boolean quit = false;
+        boolean quit = false;
         do {
             if (player.getCurrentRoom().getNeighborNames() == null) {
                 System.out.println("You're stuck and die there. The end.");
@@ -32,7 +34,8 @@ public class Main {
             else {
                 System.out.println("\nWhat do you want to do?");
                 response = in.nextLine();
-//                response = "look";
+//                System.out.println("SIMULATED RESPONSE: look"); response = "look"; // DEBUG
+//                player.addItem( new Item("calculator") ); // DEBUG
                 String[] words = response.split(" ");
 
                 if (words[0].equals("go")) {
@@ -43,7 +46,7 @@ public class Main {
                         if (destRoom == null) {
                             System.out.println("You can't go to " + words[1] + ". Try again.");
                         } else {
-                            player.setCurrentRoom( destRoom );
+                            player.moveToRoom( destRoom );
                             System.out.println("You are now in the " + player.getCurrentRoom().getName());
                         }
                     }
@@ -52,20 +55,20 @@ public class Main {
                 else if (words[0].equals("look")) {
                     System.out.println("You are in the " + player.getCurrentRoom().getName() + ". You can go to: ");
                     for (String name : player.getCurrentRoom().getNeighborNames() ) {
-                        System.out.println("- " + name + " (" + l.getRoom(name).getDescription() + ")");
+                        System.out.println("  - " + name + " (" + l.getRoom(name).getDescription() + ")");
                     }
-                    if (player.getCurrentRoom().getCreatures().size() != 0) {
-                        System.out.println("The following creatures are in the room: " + player.getCurrentRoom().getCreatureNames());
+                    if ( l.getCreatureNames( player.getCurrentRoom() ).length() != 0) {
+                        System.out.println("Creatures in the room: " + l.getCreatureNames( player.getCurrentRoom() ));
                     }
                     if (player.getCurrentRoom().getItems().size() != 0) {
-                        System.out.print("The room contains: " + player.getCurrentRoom().displayItems());
+                        System.out.println("Items in the room: " + player.getCurrentRoom().displayItems());
                     }
                     if (player.getItems().size() != 0) {
                         System.out.print("You have: ");
                         player.displayInventory();
                     }
                 }
-
+                //TODO: add addedge() method to
                 else if (words[0].equals("add")) {
                     if (words.length < 3) {
                         displayHelp();
@@ -91,7 +94,7 @@ public class Main {
                     } else {
                         Item item = player.getCurrentRoom().removeItem( words[1] );
                         if (item == null) {
-                            System.out.print("Hmm. Coulnd't remove " + words[1] + ". Here's what the room contains: " + player.getCurrentRoom().displayItems());
+                            System.out.print("Hmm. Coulnd't remove " + words[1] + ". The room contains: " + player.getCurrentRoom().displayItems());
                         } else {
                             player.addItem( item );
                             player.getCurrentRoom().removeItem( item.getName() );
@@ -112,7 +115,7 @@ public class Main {
                         } else {
                             player.getCurrentRoom().addItem( item );
                             player.removeItem( item.getName() );
-                            System.out.print("The " + player.getCurrentRoom().getName() + " know contains: " + player.getCurrentRoom().displayItems());
+                            System.out.println("The " + player.getCurrentRoom().getName() + " now contains: " + player.getCurrentRoom().displayItems());
                         }
                     }
                 }
@@ -124,12 +127,7 @@ public class Main {
                 }
 
                 // Creatures
-                for (Level.Room room : l.getRooms()) {
-                    for (Creature c : room.getCreatures()) {
-//                        c.act();
-                        c.move();
-                    }
-                }
+                l.updateAllCreatures();
             }
         } while (!quit);
     }

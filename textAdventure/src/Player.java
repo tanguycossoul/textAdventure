@@ -10,8 +10,7 @@ public class Player {
     public Player(String name, String description, Level.Room room) {
         this.name = name;
         this.description = description;
-        setCurrentRoom( room );
-        room.incNumPlayers();
+        moveToRoom( room );
     }
 
     public void addItem(Item item) {
@@ -51,19 +50,26 @@ public class Player {
         }
     }
 
+    public Item dropRandomItem(String name) {
+        if (items.size() < 1) { return null; }
+        Item item = items.get( (int) (Math.random() * items.size()) );
+        items.remove( item );
+        currentRoom.addItem( item );
+        System.out.println("You've been attacked by a " + name + ". You've dropped the " + item.getName());
+        return item;
+    }
+
     public Level.Room getCurrentRoom() { // return room player is currently in
         return this.currentRoom;
     }
 
-    public void setCurrentRoom(Level.Room newroom) { // set player’s current room to a new room
-        this.currentRoom = newroom;
-    }
-
-    public boolean moveToRoom(Level.Room next) { // try and move to neighboring room with given name
-        if (next == null) { return false; }
-        currentRoom.decNumPlayers();
-        setCurrentRoom( next );
-        currentRoom.incNumPlayers();
+    public boolean moveToRoom(Level.Room room_dst) { // set player’s current room to a new room
+        if (room_dst == null) { return false; }
+        if (currentRoom != null) {
+            currentRoom.removePlayer(this);
+        }
+        room_dst.addPlayer( this );
+        currentRoom = room_dst;
         return true;
     }
 

@@ -1,19 +1,27 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/*
-    TODO: move level-1 specifics into a sub-class
+// TODO: move level-1 specifics into a sub-class?
+
+/* Rooms connectivity matrix:
+    hall    bedroom closet  dungeon kitchen trap
+    hall        0       1       1       0       0       0
+    bedroom     0       0       0       1       0       0
+    closet      1       0       0       0       0       0
+    dungeon     0       0       0       0       1       1
+    kitchen     1       0       0       0       0       0
+    trap        0       0       0       0       0       0
  */
 
 public class Level {
     private String name;
+
+    private ArrayList<Player> players = new ArrayList<>();
+    private ArrayList<Creature> creatures = new ArrayList<>();
+    private static HashMap<String, Room> rooms = new HashMap<String, Room>();
+
     private static String[] room_names = {"hall", "bedroom", "closet", "dungeon", "kitchen", "trap"};
     private static String[] room_descr = {"where you walk", "where you sleep", "where you put your stuff", "where you code", "where you cook", "where you lock your brother"};
-
-    private ArrayList<Player> players;
-
-//    public static Level self = new Level();
-    private static HashMap<String, Room> rooms = new HashMap<String, Room>();
 
     public Level(String name) {
         this.name = name;
@@ -33,11 +41,11 @@ public class Level {
         getRoom("hall").addItem("map");
 
         // Add creatures
-        getRoom("hall").addCreature("chicken");
-        getRoom("bedroom").addCreature("wumpus");
+        addCreature("chicken", rooms.get("hall") );
+        addCreature("wumpus", rooms.get("bedroom") );
     }
 
-
+    // Rooms
     public Room getRoom(String name) {
         return rooms.get(name);
     }
@@ -49,12 +57,10 @@ public class Level {
 
     public void addEdge(Room room1, Room room2) {
         room1.addNeighbor(room2);
-//        System.out.println("INFO: connecting " + room1.getName() + " to " + room2.getName());
     }
 
     public void addEdge(String name1, String name2) {
         getRoom(name1).addNeighbor( getRoom(name2) );
-//        System.out.println("INFO: connecting " + name1 + " to " + name2);
     }
 
     public void addEdgeBidir(Room room1, Room room2) {
@@ -71,18 +77,71 @@ public class Level {
 //        System.out.println("INFO: connecting " + name2 + " to " + name1);
     }
 
-    public ArrayList<Room> getRooms() {
-        return new ArrayList<Room>( rooms.values() );
+    // Creatures
+    public ArrayList<Creature> getCreatures(Room room) {
+        ArrayList<Creature> output = new ArrayList<>();
+        for (Creature c: creatures) {
+            if ( c.getCurrentRoom().equals( room )) {
+                output.add( c );
+            }
+        }
+        return output;
     }
+
+    public String getCreatureNames(Room room) {
+        String output = "";
+        for (Creature c : getCreatures( room )) {
+            output += c.getName() + " ";
+        }
+        return output;
+    }
+
+    public Creature removeCreature(Creature c) {
+        if (c == null) { return null; }
+        creatures.remove( c );
+        return c;
+    }
+
+    public Creature removeCreature(String name, Room room) {
+        for (Creature c : creatures) {
+            if (c.getName().equals( name ) && c.getCurrentRoom().equals( room )) {
+                creatures.remove( c );
+                return c;
+            }
+        }
+        System.out.println("WARNING: couldn't remove " + name + " in room " + room.getName());
+        return null;
+    }
+
+    public void addCreature(String name, Room room) {
+        Creature c;
+        if (name.toLowerCase().equals("chicken"))      { c = new Chicken( room ); }
+        else if (name.toLowerCase().equals("wumpus"))  { c = new Wumpus( room ); }
+        else if (name.toLowerCase().equals("popstar")) { c = new Popstar( room ); }
+        else {
+            System.out.println("WARNING: cannot create creature named: " + name);
+            return;
+        }
+        c.setCurrentRoom( room );
+        creatures.add( c );
+    }
+
+    public void updateAllCreatures() {
+        for (Creature c : creatures) {
+            c.act();
+        }
+    }
+
 
     //------------------------------------------------------------------------------------------------------------------
     public class Room {
         private String name;
         private String description;
+
         private ArrayList<Item> items = new ArrayList<>();
         private ArrayList<Creature> creatures = new ArrayList<>();
-        private HashMap<String, Room> neighbors =  new HashMap<>();
-        private int numPlayers = 0;
+        private HashMap<String, Room> neighbors = new HashMap<>();
+        private ArrayList<Player> players = new ArrayList<>();
 
         private Room(String name, String description) {
             this.name = name;
@@ -102,21 +161,27 @@ public class Level {
         }
 
         private void addNeighbor(Room n) {
-            if (n == null) { return; }
-            neighbors.put( n.getName(), n);
+            if (n == null) {
+                return;
+            }
+            neighbors.put(n.getName(), n);
         }
 
         private void addNeighbor(String name) {
             Room n = rooms.get(name);
-            if (n == null) { return; }
+            if (n == null) {
+                return;
+            }
             neighbors.put(name, n);
         }
 
         public String[] getNeighborNames() {
-            if (neighbors.size() == 0) { return null; }
+            if (neighbors.size() == 0) {
+                return null;
+            }
 
             String[] output = new String[ neighbors.size() ];
-            int i=0;
+            int i = 0;
             for (String name : neighbors.keySet()) {
                 output[i++] = neighbors.get(name).getName();
             }
@@ -124,7 +189,7 @@ public class Level {
         }
 
         public Room getNeighbor(String name) {
-            return neighbors.get( name );
+            return neighbors.get(name);
         }
 
         public ArrayList<Room> getNeighbors() {
@@ -152,23 +217,23 @@ public class Level {
 
         public void addItem(String name) {
             Item item = new Item(name, "");
-            items.add( item );
+            items.add(item);
         }
 
         public void addItem(String name, String description) {
             Item item = new Item(name, description);
-            items.add( item );
+            items.add(item);
         }
 
-        // Note: allowing to have duplicate items
+        // Note: allowing duplicate items
         public void addItem(Item item) {
             items.add(item);
         }
 
         public Item removeItem(String name) {
             for (Item item : items) {
-                if (item.getName().equals( name )) {
-                    destroyItem( item );
+                if (item.getName().equals(name)) {
+                    destroyItem(item);
                     return item;
                 }
             }
@@ -179,70 +244,29 @@ public class Level {
             return items.remove(item);
         }
 
-        public Player GetRandPlayer() {
-            return players.get(players.size()* (int)Math.random());
+        public Player getRandPlayer() {
+            if (players.size() == 0) { return null; }
+            return players.get(players.size() * (int) Math.random());
         }
 
         public int getNumPlayers() {
-            return numPlayers;
+            return players.size();
         }
 
-        public int incNumPlayers() {
-            return ++numPlayers;
+        public void addPlayer( Player p ) {
+            if (!players.contains( p )) {
+                players.add( p );
+            };
         }
 
-        public int decNumPlayers() {
-            return --numPlayers;
+        public void removePlayer( Player p ) {
+            if (players.contains( p )) {
+                players.remove( p );
+            };
         }
 
         public boolean hasPlayer() {
-            return ( numPlayers > 0 );
-        }
-
-        // Creatures
-        public String getCreatureNames() {
-            String output = "";
-            for (Creature c : creatures) {
-                output += c.getName() + " ";
-            }
-            return output;
-        }
-
-        public ArrayList<Creature> getCreatures() {
-            return creatures;
-        }
-
-        public Creature removeCreature(String name) {
-            for (Creature c : creatures) {
-                if (c.getName().equals( name )) {
-                    creatures.remove( c );
-                    return c;
-                }
-            }
-            System.out.println("WARNING: couldn't remove creature named: " + name);
-            return null;
-        }
-
-        public Creature removeCreature(Creature c) {
-            if (c == null) { return null; }
-            creatures.remove( c );
-            return c;
-        }
-
-        public void addCreature(String name) {
-            Creature c;
-            if (name.toLowerCase().equals("chicken"))      { c = new Chicken(this); }
-            else if (name.toLowerCase().equals("wumpus"))  { c = new Wumpus(this); }
-            else if (name.toLowerCase().equals("popstar")) { c = new Popstar(this); }
-            else {
-                System.out.println("WARNING: cannot create creature named: " + name);
-                return;
-            }
-            addCreature( c );
-        }
-
-        public void addCreature(Creature creature) {
-            creatures.add( creature );
+            return (players.size() > 0);
         }
     }
 }
