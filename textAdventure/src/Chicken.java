@@ -9,8 +9,8 @@ public class Chicken extends Creature {
     // Chance to peck player and make them drop a random item
     // Display "you get attacked by a wild chicken and drop your <Item>
     public void act() {
-        moveRandom();
         attack();
+        moveRandom();
     }
 
     public void attack() {

@@ -4,13 +4,15 @@ public class Player {
 
     private String name;
     private String description;
+    private Level level;
     private ArrayList<Item> items = new ArrayList<>();
     private Level.Room currentRoom;
 
-    public Player(String name, String description, Level.Room room) {
+    public Player(String name, String description, Level level, String roomName) {
         this.name = name;
         this.description = description;
-        moveToRoom( room );
+        this.level = level;
+        moveToRoom( level.getRoom( roomName ) );
     }
 
     public void addItem(Item item) {
@@ -35,19 +37,19 @@ public class Player {
         return items;
     }
 
-    public void displayInventory() { // display items you’re carrying
+    public String listInventory() { // return items player is carrying
+        String output = "";
         if (items == null) {
-            System.out.println("none");
+            output = "none";
         } else {
             for (int i = 0; i < items.size(); i++) {
-                System.out.print(items.get(i).getName());
+                output += items.get(i).getName();
                 if (i < items.size() - 1) {
-                    System.out.print(", ");
-                } else {
-                    System.out.println();
+                    output += ", ";
                 }
             }
         }
+        return output;
     }
 
     public Item dropRandomItem(String name) {
@@ -87,5 +89,13 @@ public class Player {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Level getLevel() {
+        return level;
+    }
+
+    public void setLevel(Level level) {
+        this.level = level;
     }
 }

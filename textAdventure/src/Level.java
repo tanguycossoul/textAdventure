@@ -1,10 +1,10 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-// TODO: move level-1 specifics into a sub-class?
+// IDEA: move level-1 specifics into a sub-class (when we have multiple levels)
 
 /* Rooms connectivity matrix:
-    hall    bedroom closet  dungeon kitchen trap
+                hall    bedroom closet  dungeon kitchen trap
     hall        0       1       1       0       0       0
     bedroom     0       0       0       1       0       0
     closet      1       0       0       0       0       0
@@ -43,6 +43,7 @@ public class Level {
         // Add creatures
         addCreature("chicken", rooms.get("hall") );
         addCreature("wumpus", rooms.get("bedroom") );
+        addCreature("popstar", rooms.get("dungeon") );
     }
 
     // Rooms

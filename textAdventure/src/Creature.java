@@ -5,7 +5,6 @@ import java.util.ArrayList;
 public abstract class Creature {
     private String name;
     private Level.Room currentRoom;
-    protected double ODDS_ATTACK = 0.5;
 
     public Creature(Level.Room startRoom) {
         currentRoom = startRoom;
